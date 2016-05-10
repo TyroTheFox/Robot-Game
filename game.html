@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>pixi.js example 1</title>
+		<script src="pixi.js"></script>
+	</head>
+	<body>
+		<script>
+			var renderer = PIXI.autoDetectRenderer(1200, 600, { antialias: true });
+			document.body.appendChild(renderer.view);
+
+			// create the root of the scene graph
+			var stage = new PIXI.Container();
+
+			stage.interactive = true;
+
+			var deck = new Array();
+			var hand = new Array();
+			var style = {
+			    fill : '#FFFF00'
+			};
+
+			var deckSize = 20;
+
+			var handX = 370;
+			var handY = 370;
+
+			var deckPos = 0;
+			var handSize = 6;
+			var cardNo = 0;
+
+			var end = handSize;
+
+			for (var i = 0; i < deckSize; i++)
+			{
+				createCard(handX, 370);
+			}	
+
+			var forwardBtn = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			forwardBtn.lineStyle(2, 0x00FF00, 1);
+			forwardBtn.beginFill(0xFFFFFF, 1);
+			forwardBtn.drawRoundedRect(700, 370, 50, 200);
+			forwardBtn.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			forwardBtn.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			forwardBtn.buttonMode = true;
+			forwardBtn.on('mouseup', scrollHandForward)
+			stage.addChild(forwardBtn);
+
+			var backBtn = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			backBtn.lineStyle(2, 0x0000FF, 1);
+			backBtn.beginFill(0xFFFFFF, 1);
+			backBtn.drawRoundedRect(1100, 370, 50, 200);
+			backBtn.endFill();
+			// enable the bunny to be interactive... this will alvlow it to respond to mouse and touch events
+			backBtn.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			backBtn.buttonMode = true;
+			backBtn.on('mouseup', scrollHandBack)
+			stage.addChild(backBtn);
+
+			function createCard(x, y){
+				var testCard = new PIXI.Graphics();
+				// set a fill and a line style again and draw a rectangle
+				testCard.lineStyle(2, 0x0000FF, 1);
+				testCard.beginFill(0xFFFFFF, 1);
+				testCard.drawRoundedRect(x, y, 150, 200);
+				testCard.endFill();
+				// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			    testCard.interactive = true;
+			    // this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			    testCard.buttonMode = true;
+			    testCard.on('mouseup', selectCard)
+			    testCard.selected = false;
+			    var basicText = new PIXI.Text(cardNo, style);
+				basicText.x = x + 20;
+				basicText.y = y + 20;
+				cardNo++;
+				testCard.text = basicText;
+				deck.push(testCard);
+			}
+
+			var a = 1;
+			for (var i = deckPos; i < handSize; i++)
+			{
+				deck[i].position.x = handX + (a * 30);
+				deck[i].text.position.x = deck[i].position.x + handX + 10;
+				a++;
+				stage.addChild(deck[i]);
+				stage.addChild(deck[i].text)
+			}
+
+			// run the render loop
+			animate();
+
+			function animate() {
+
+			    renderer.render(stage);
+			    requestAnimationFrame( animate );
+			}
+
+			function selectCard(){
+				if(this.selected == true){
+					this.position.y = this.position.y + 50;
+					this.text.position.y = this.text.position.y + 50;
+					this.selected = false;
+				}else{
+					this.position.y = this.position.y - 50;
+					this.text.position.y = this.text.position.y - 50;
+					this.selected = true;
+				}
+			}
+
+			function scrollHandForward(){
+				removeCards(0, deck.length);
+				if((deckPos + handSize) < deck.length){
+					console.log('Under ' + deckPos);
+					scrollCardsForwards(deckPos, (deckPos + handSize), 1);
+				}else{
+					console.log('Over');
+					scrollCardsForwards(deckPos, deck.length, 1);
+					deckPos = 0;
+				}
+				animate();
+			}
+
+			function scrollHandBack(){
+				removeCards(0, deck.length);
+				if((deckPos - handSize) > 0){
+					console.log('Under ' + (deckPos - handSize));
+					scrollCardsBackwards((deckPos - handSize), deckPos, 1);
+				}else{
+					console.log('Over');
+					scrollCardsBackwards((deckPos - handSize) + deck.length, deck.length,1);
+					deckPos = deck.length;
+				}
+				animate();
+			}
+
+			function removeCards(a, end){
+				if(a < end){
+					stage.removeChild(deck[a]);
+					stage.removeChild(deck[a].text);
+					a++;
+					removeCards(a, end);
+				}
+				return;
+			}
+
+			function scrollCardsForwards(a, end, xOff){
+				if(a >= end){
+					deckPos = end;
+					console.log('Move forward ' + a + ' End ' + end);
+				}else{
+					console.log('Card ' + a + ' End ' + end);
+					deck[a].position.x = handX + (xOff * 30);
+					deck[a].text.position.x = deck[a].position.x + handX + 10;
+					stage.addChild(deck[a]);
+					stage.addChild(deck[a].text);
+					a++;
+					xOff++;
+					scrollCardsForwards(a, end, xOff);
+				}
+			}
+
+			function scrollCardsBackwards(a, end, xOff){
+				console.log('backward ' + a + ' End ' + end);
+				if(a >= end){
+					deckPos = end;
+					console.log('Move backward' + a + ' End ' + end);
+				}else{
+					console.log('Card ' + a + ' End ' + end);
+					deck[a].position.x = handX + (xOff * 30);
+					deck[a].text.position.x = deck[a].position.x + handX + 10;
+					stage.addChild(deck[a]);
+					stage.addChild(deck[a].text);
+					a++;
+					xOff++;
+					scrollCardsBackwards(a, end, xOff);
+				}
+			}
+
+			/*function addCardsForward(){
+				end = deckPos + handSize;
+				alert(end + ' ' + deckPos);
+				if(end > deck.length){
+					var a = 1;
+					dfor (var i = deckPos; i > deck.length; i++)
+					{
+						alert('Over'+i);
+						deck[i].position.x = handX + (a * 30);
+						deck[i].text.position.x = deck[i].position.x + handX + 10;
+						a++;
+						stage.addChild(deck[i]);
+						stage.addChil(deck[i].text);
+					}
+					deckPos = 0;
+					end = handSize;
+				}else{
+					var a = 1;
+					for (var i = deckPos; i > end; i++)
+					{
+						alert('Under'+i);
+						deck[i].position.x = handX + (a * 30);
+						deck[i].text.position.x = deck[i].position.x + handX + 10;
+						a++;
+						stage.addChild(deck[i]);
+						stage.addChild(deck[i].text);
+					}
+				}
+			}
+
+			function addCardsBack(){
+				if(deckPos + handSize < deck.length){
+					overflow = end - deck.length;
+					deckPos = 0;
+					end = handSize;
+				}
+				var a = 1;
+				for (var i = end; i > deckPos; i++)
+				{
+					deck[i].position.x = handX + (a * 30);
+					deck[i].text.position.x = deck[i].position.x + handX + 10;
+					a++;
+					stage.addChild(deck[i]);
+					stage.addChild(deck[i].text);
+				}
+			}*/
+		</script>
+	</body>
+</html>
