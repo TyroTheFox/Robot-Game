@@ -30,11 +30,31 @@
 			var cardNo = 0;
 
 			var end = handSize;
+			var submitted = new Array();
+			var discard = new Array();
 
 			for (var i = 0; i < deckSize; i++)
 			{
 				createCard(handX, 370);
 			}	
+
+			var testCore = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			testCore.lineStyle(2, 0xFF0000, 1);
+			testCore.beginFill(0xFFFFFF, 1);
+			testCore.drawRoundedRect(50, 100, 200, 50);
+			testCore.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			testCore.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			testCore.buttonMode = true;
+			testCore.on('mouseup', loadCore);
+			testCore.on('touchend', loadCore);
+			var coreIcon = new PIXI.Text('Core', style);
+			coreIcon.x = testCore.graphicsData[0].shape.x + 20;
+			coreIcon.y = testCore.graphicsData[0].shape.y + 20;
+			stage.addChild(testCore);
+			stage.addChild(coreIcon);
 
 			var forwardBtn = new PIXI.Graphics();
 			// set a fill and a line style again and draw a rectangle
@@ -72,7 +92,7 @@
 			stage.addChild(backBtn);
 			stage.addChild(backIcon);
 
-			var submitBtn = new PIXI.Graphics();
+			/*var submitBtn = new PIXI.Graphics();
 			// set a fill and a line style again and draw a rectangle
 			submitBtn.lineStyle(2, 0x0000FF, 1);
 			submitBtn.beginFill(0xFFFFFF, 1);
@@ -88,7 +108,7 @@
 			submitText.x = submitBtn.graphicsData[0].shape.x + 15;
 			submitText.y = submitBtn.graphicsData[0].shape.y + 20;
 			stage.addChild(submitBtn);
-			stage.addChild(submitText);
+			stage.addChild(submitText);*/
 
 			function createCard(x, y){
 				var testCard = new PIXI.Graphics();
@@ -105,6 +125,7 @@
 			    testCard.on('touchend', selectCard);
 			    testCard.selected = false;
 			    var basicText = new PIXI.Text(cardNo, style);
+			    testCard.priority = cardNo;
 				basicText.x = testCard.graphicsData[0].shape.x + 20;
 				basicText.y = testCard.graphicsData[0].shape.y + 20;
 				cardNo++;
@@ -144,8 +165,8 @@
 			function scrollHandForward(){
 				removeCards(0, deck.length);
 				if((deckPos + handSize) <= deck.length){
-					scrollCards(deckPos, (deckPos + handSize), 1);
 					deckPos = (deckPos + handSize);
+					scrollCards((deckPos - handSize), deckPos, 1);
 				}else{
 					scrollCards(deckPos, deck.length, 1);
 					deckPos = 0;
@@ -156,8 +177,8 @@
 			function scrollHandBack(){
 				removeCards(0, deck.length);
 				if((deckPos - handSize) >= 0){
-					scrollCards((deckPos - handSize), deckPos, 1);
 					deckPos = (deckPos - handSize);
+					scrollCards(deckPos, (deckPos + handSize), 1);
 				}else{
 					scrollCards(((deck.length/handSize).toFixed(0))*handSize, deck.length,1);
 					deckPos = ((deck.length/handSize).toFixed(0))*handSize;
@@ -190,15 +211,46 @@
 
 			function submitHand(){
 				var submittedHand = 'Submitted: ';
+				var discardPile = 'Discard: ';
+				a = 0;
 				for (var i = 0; i < deck.length; i++)
 				{ 
 					if(deck[i].selected){
 						submittedHand += ' ' + deck[i].text._text;
+						submitted[a] = deck[i];
+						discard[a] = deck.splice(i, 1)[0];
+						discardPile += discard[a].text._text;
+						a++;
 					}
 				}
 				var submitText = new PIXI.Text(submittedHand, style);
 				submitText.x = 20;
 				submitText.y = 20;
+				stage.addChild(submitText);
+				var discardText = new PIXI.Text(discardPile, style);
+				discardText.x = 20;
+				discardText.y = 1000;
+				stage.addChild(discardText);
+				animate();
+			}
+
+			function loadCore(){
+				submitHand();
+				testCore.chamber = submitted;
+				loadedCore = 'Core: ';
+				var sumPriority = 0;
+				for (var i = 0; i < testCore.chamber.length; i++)
+				{ 
+					loadedCore += ' ' + testCore.chamber[i].text._text;
+					sumPriority += testCore.chamber[i].priority;
+				}
+				var submitText = new PIXI.Text(loadedCore, style);
+				submitText.x = 20;
+				submitText.y = 180;
+				stage.addChild(submitText);
+				var submitText = new PIXI.Text("Sum Priority: " + sumPriority, style);
+				submitText.x = 20;
+				submitText.y = 220;
 				stage.addChild(submitText);
 				animate();
 			}
