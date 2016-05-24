@@ -33,10 +33,21 @@
 			var submitted = new Array();
 			var discard = new Array();
 
+			var enemyHP = 100;
+
 			for (var i = 0; i < deckSize; i++)
 			{
 				createCard(handX, 370);
 			}	
+
+			var target = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			target.lineStyle(2, 0xFF0000, 1);
+			target.beginFill(0xFFFFFF, 1);
+			target.drawRoundedRect(900, 50, 50, 200);
+			target.endFill();
+			stage.addChild(target);
+
 
 			var testCore = new PIXI.Graphics();
 			// set a fill and a line style again and draw a rectangle
@@ -55,6 +66,25 @@
 			coreIcon.y = testCore.graphicsData[0].shape.y + 20;
 			stage.addChild(testCore);
 			stage.addChild(coreIcon);
+			testCore.damage = 2;
+
+			var fireBtn = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			fireBtn.lineStyle(2, 0xFF0000, 1);
+			fireBtn.beginFill(0xFFFFFF, 1);
+			fireBtn.drawRoundedRect(720, 250, 200, 50);
+			fireBtn.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			fireBtn.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			fireBtn.buttonMode = true;
+			fireBtn.on('mouseup', fireEquipment);
+			fireBtn.on('touchend', fireEquipment);
+			var fireIcon = new PIXI.Text('FIRE!', style);
+			fireIcon.x = fireBtn.graphicsData[0].shape.x + 20;
+			fireIcon.y = fireBtn.graphicsData[0].shape.y + 20;
+			stage.addChild(fireBtn);
+			stage.addChild(fireIcon);
 
 			var forwardBtn = new PIXI.Graphics();
 			// set a fill and a line style again and draw a rectangle
@@ -155,6 +185,7 @@
 				if(this.selected == true){
 					this.position.y = this.position.y + 50;
 					this.text.position.y = this.text.position.y + 50;
+					this.selected = false;
 				}else{
 					this.position.y = this.position.y - 50;
 					this.text.position.y = this.text.position.y - 50;
@@ -199,30 +230,36 @@
 			function scrollCards(a, end, xOff){
 				if(a >= end){
 				}else{
-					deck[a].position.x = handX + (xOff * 30);
-					deck[a].text.position.x = deck[a].position.x + handX + 10;
-					stage.addChild(deck[a]);
-					stage.addChild(deck[a].text);
+					if(deck[a]){
+						console.log('Add Card: '+deck[a].text._text);
+						deck[a].position.x = handX + (xOff * 30);
+						deck[a].text.position.x = deck[a].position.x + handX + 10;
+						stage.addChild(deck[a]);
+						stage.addChild(deck[a].text);
+						xOff++;
+					}
 					a++;
-					xOff++;
 					scrollCards(a, end, xOff);
+
 				}
 			}
 
 			function submitHand(){
 				var submittedHand = 'Submitted: ';
 				var discardPile = 'Discard: ';
-				a = 0;
-				for (var i = 0; i < deck.length; i++)
+				removeCards(0, deck.length);
+				for (var i = deck.length - 1; i >= 0; i--)
 				{ 
 					if(deck[i].selected){
 						submittedHand += ' ' + deck[i].text._text;
-						submitted[a] = deck[i];
-						discard[a] = deck.splice(i, 1)[0];
-						discardPile += discard[a].text._text;
-						a++;
+						submitted.push(deck[i]);
+						discard.push(deck.splice(i, 1)[0]);
+						console.log("Removed: "+discard[discard.length - 1].text._text);
+						discardPile += discard[discard.length - 1].text._text;
 					}
 				}
+				console.log(deckPos+' -> '+ (deckPos + handSize));
+				scrollCards(deckPos, (deckPos + handSize), 1);
 				var submitText = new PIXI.Text(submittedHand, style);
 				submitText.x = 20;
 				submitText.y = 20;
@@ -231,7 +268,6 @@
 				discardText.x = 20;
 				discardText.y = 1000;
 				stage.addChild(discardText);
-				animate();
 			}
 
 			function loadCore(){
@@ -244,6 +280,7 @@
 					loadedCore += ' ' + testCore.chamber[i].text._text;
 					sumPriority += testCore.chamber[i].priority;
 				}
+				testCore.sumPriority = sumPriority;
 				var submitText = new PIXI.Text(loadedCore, style);
 				submitText.x = 20;
 				submitText.y = 180;
@@ -253,6 +290,19 @@
 				submitText.y = 220;
 				stage.addChild(submitText);
 				animate();
+			}
+
+			function fireEquipment(){
+				if(testCore.chamber && testCore.chamber.length >= 3){
+					enemyHP -= testCore.damage;
+					var discardText = new PIXI.Text(enemyHP, style);
+					discardText.x = target.graphicsData[0].shape.x - 40;
+					discardText.y = target.graphicsData[0].shape.y;
+					stage.removeChild(discardText);
+					stage.addChild(discardText);
+					animate();
+					testCore.chamber = [];
+				}
 			}
 
 			/*function scrollCardsBackwards(a, end, xOff){
