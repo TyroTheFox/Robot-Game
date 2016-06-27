@@ -19,6 +19,10 @@
 			var style = {
 			    fill : '#FF0000'
 			};
+			var miniStyle = {
+			    fill : '#FF0000',
+			    font : '200px'
+			};
 
 			var deckSize = 20;
 
@@ -53,7 +57,7 @@
 			// set a fill and a line style again and draw a rectangle
 			testCore.lineStyle(2, 0xFF0000, 1);
 			testCore.beginFill(0xFFFFFF, 1);
-			testCore.drawRoundedRect(50, 100, 200, 50);
+			testCore.drawRoundedRect(450, 550, 200, 50);
 			testCore.endFill();
 			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
 			testCore.interactive = true;
@@ -64,9 +68,90 @@
 			var coreIcon = new PIXI.Text('Core', style);
 			coreIcon.x = testCore.graphicsData[0].shape.x + 20;
 			coreIcon.y = testCore.graphicsData[0].shape.y + 20;
+			testCore.icon = coreIcon;
 			stage.addChild(testCore);
 			stage.addChild(coreIcon);
 			testCore.damage = 2;
+
+			var testGun = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			testGun.lineStyle(2, 0xFF0000, 1);
+			testGun.beginFill(0xFFFFFF, 1);
+			testGun.drawRoundedRect(450, 450, 200, 50);
+			testGun.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			testGun.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			testGun.buttonMode = true;
+			testGun.on('mouseup', loadGun);
+			testGun.on('touchend', loadGun);
+			var gunIcon = new PIXI.Text('Gun', style);
+			gunIcon.x = testGun.graphicsData[0].shape.x + 20;
+			gunIcon.y = testGun.graphicsData[0].shape.y + 20;
+			testGun.icon = gunIcon;
+			stage.addChild(testGun);
+			stage.addChild(gunIcon);
+			testGun.damage = 2;
+
+			var testSword = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			testSword.lineStyle(2, 0xFF0000, 1);
+			testSword.beginFill(0xFFFFFF, 1);
+			testSword.drawRoundedRect(450, 350, 200, 50);
+			testSword.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			testSword.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			testSword.buttonMode = true;
+			testSword.on('mouseup', loadSword);
+			testSword.on('touchend', loadSword);
+			var swordIcon = new PIXI.Text('Sword', style);
+			swordIcon.x = testSword.graphicsData[0].shape.x + 20;
+			swordIcon.y = testSword.graphicsData[0].shape.y + 20;
+			testSword.icon = swordIcon;
+			stage.addChild(testSword);
+			stage.addChild(swordIcon);
+			testSword.damage = 2;
+
+			var testHelmet = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			testHelmet.lineStyle(2, 0xFF0000, 1);
+			testHelmet.beginFill(0xFFFFFF, 1);
+			testHelmet.drawRoundedRect(450, 250, 200, 50);
+			testHelmet.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			testHelmet.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			testHelmet.buttonMode = true;
+			testHelmet.on('mouseup', loadHelmet);
+			testHelmet.on('touchend', loadHelmet);
+			var helmetIcon = new PIXI.Text('Helmet', style);
+			helmetIcon.x = testHelmet.graphicsData[0].shape.x + 20;
+			helmetIcon.y = testHelmet.graphicsData[0].shape.y + 20;
+			testHelmet.icon = helmetIcon;
+			stage.addChild(testHelmet);
+			stage.addChild(helmetIcon);
+			testHelmet.damage = 2;
+
+			var testArmour = new PIXI.Graphics();
+			// set a fill and a line style again and draw a rectangle
+			testArmour.lineStyle(2, 0xFF0000, 1);
+			testArmour.beginFill(0xFFFFFF, 1);
+			testArmour.drawRoundedRect(450, 150, 200, 50);
+			testArmour.endFill();
+			// enable the bunny to be interactive... this will allow it to respond to mouse and touch events
+			testArmour.interactive = true;
+			// this button mode will mean the hand cursor appears when you roll over the bunny with your mouse
+			testArmour.buttonMode = true;
+			testArmour.on('mouseup', loadArmour);
+			testArmour.on('touchend', loadArmour);
+			var armourIcon = new PIXI.Text('Armour', style);
+			armourIcon.x = testArmour.graphicsData[0].shape.x + 20;
+			armourIcon.y = testArmour.graphicsData[0].shape.y + 20;
+			testArmour.icon = armourIcon;
+			stage.addChild(testArmour);
+			stage.addChild(armourIcon);
+			testArmour.damage = 2;
 
 			var fireBtn = new PIXI.Graphics();
 			// set a fill and a line style again and draw a rectangle
@@ -158,8 +243,17 @@
 			    testCard.priority = cardNo;
 				basicText.x = testCard.graphicsData[0].shape.x + 20;
 				basicText.y = testCard.graphicsData[0].shape.y + 20;
-				cardNo++;
 				testCard.text = basicText;
+				var miniCard = new PIXI.Graphics();
+				// set a fill and a line style again and draw a rectangle
+				miniCard.lineStyle(2, 0x0000FF, 1);
+				miniCard.beginFill(0xFFFFFF, 1);
+				miniCard.drawRoundedRect(x, y, 60, 80);
+				miniCard.endFill();
+				testCard.miniCard = miniCard;
+				var miniText = new PIXI.Text(cardNo, miniStyle);
+				cardNo++;
+				testCard.miniCard.text = miniText;
 				deck.push(testCard);
 			}
 
@@ -228,8 +322,7 @@
 			}
 
 			function scrollCards(a, end, xOff){
-				if(a >= end){
-				}else{
+				if(a < end){
 					if(deck[a]){
 						console.log('Add Card: '+deck[a].text._text);
 						deck[a].position.x = handX + (xOff * 30);
@@ -252,10 +345,7 @@
 				{ 
 					if(deck[i].selected){
 						submittedHand += ' ' + deck[i].text._text;
-						submitted.push(deck[i]);
-						discard.push(deck.splice(i, 1)[0]);
-						console.log("Removed: "+discard[discard.length - 1].text._text);
-						discardPile += discard[discard.length - 1].text._text;
+						submitted.push(deck.splice(i, 1)[0]);
 					}
 				}
 				console.log(deckPos+' -> '+ (deckPos + handSize));
@@ -264,45 +354,182 @@
 				submitText.x = 20;
 				submitText.y = 20;
 				stage.addChild(submitText);
-				var discardText = new PIXI.Text(discardPile, style);
-				discardText.x = 20;
-				discardText.y = 1000;
-				stage.addChild(discardText);
+				deckPos = 0;
+				scrollCards(deckPos, (deckPos + handSize), 1);
 			}
 
 			function loadCore(){
 				submitHand();
 				testCore.chamber = submitted;
-				loadedCore = 'Core: ';
+				removeMiniCards(0, testCore.chamber);
+				displayMiniCards(0, 1, testCore);
+				// loadedCore = 'Core: ';
 				var sumPriority = 0;
 				for (var i = 0; i < testCore.chamber.length; i++)
 				{ 
-					loadedCore += ' ' + testCore.chamber[i].text._text;
+					// loadedCore += ' ' + testCore.chamber[i].text._text;
 					sumPriority += testCore.chamber[i].priority;
 				}
-				testCore.sumPriority = sumPriority;
-				var submitText = new PIXI.Text(loadedCore, style);
-				submitText.x = 20;
-				submitText.y = 180;
-				stage.addChild(submitText);
-				var submitText = new PIXI.Text("Sum Priority: " + sumPriority, style);
-				submitText.x = 20;
-				submitText.y = 220;
-				stage.addChild(submitText);
+				// testCore.sumPriority = sumPriority;
+				// var submitText = new PIXI.Text(loadedCore, style);
+				// submitText.x = 20;
+				// submitText.y = 180;
+				// stage.addChild(submitText);
+				stage.removeChild(coreText);
+				var coreText = new PIXI.Text(sumPriority, style);
+				coreText.x = testCore.graphicsData[0].shape.x + (testCore.graphicsData[0].shape.width - 40);
+				coreText.y = testCore.graphicsData[0].shape.y + (testCore.graphicsData[0].shape.height/2) - (coreText.height/2);
+				stage.addChild(coreText);
+				animate();
+			}
+
+			function loadGun(){
+				submitHand();
+				testGun.chamber = submitted;
+				removeMiniCards(0, testGun.chamber);
+				displayMiniCards(0, 1, testGun);
+				// loadedCore = 'Core: ';
+				var sumPriority = 0;
+				for (var i = 0; i < testGun.chamber.length; i++)
+				{ 
+					// loadedCore += ' ' + testCore.chamber[i].text._text;
+					sumPriority += testGun.chamber[i].priority;
+				}
+				// testCore.sumPriority = sumPriority;
+				// var submitText = new PIXI.Text(loadedCore, style);
+				// submitText.x = 20;
+				// submitText.y = 180;
+				// stage.addChild(submitText);
+				stage.removeChild(gunText);
+				var gunText = new PIXI.Text(sumPriority, style);
+				gunText.x = testGun.graphicsData[0].shape.x + (testGun.graphicsData[0].shape.width - 40);
+				gunText.y = testGun.graphicsData[0].shape.y + (testGun.graphicsData[0].shape.height/2) - (gunText.height/2);
+				stage.addChild(gunText);
+				animate();
+			}
+
+			function loadSword(){
+				submitHand();
+				testSword.chamber = submitted;
+				removeMiniCards(0, testSword.chamber);
+				displayMiniCards(0, 1, testSword);
+				// loadedCore = 'Core: ';
+				var sumPriority = 0;
+				for (var i = 0; i < testSword.chamber.length; i++)
+				{ 
+					// loadedCore += ' ' + testCore.chamber[i].text._text;
+					sumPriority += testSword.chamber[i].priority;
+				}
+				// testCore.sumPriority = sumPriority;
+				// var submitText = new PIXI.Text(loadedCore, style);
+				// submitText.x = 20;
+				// submitText.y = 180;
+				// stage.addChild(submitText);
+				stage.removeChild(swordText);
+				var swordText = new PIXI.Text(sumPriority, style);
+				swordText.x = testSword.graphicsData[0].shape.x + (testSword.graphicsData[0].shape.width - 40);
+				swordText.y = testSword.graphicsData[0].shape.y + (testSword.graphicsData[0].shape.height/2) - (swordText.height/2);
+				stage.addChild(swordText);
+				animate();
+			}
+
+			function loadArmour(){
+				submitHand();
+				testArmour.chamber = submitted;
+				removeMiniCards(0, testArmour.chamber);
+				displayMiniCards(0, 1, testArmour);
+				// loadedCore = 'Core: ';
+				var sumPriority = 0;
+				for (var i = 0; i < testArmour.chamber.length; i++)
+				{ 
+					// loadedCore += ' ' + testCore.chamber[i].text._text;
+					sumPriority += testArmour.chamber[i].priority;
+				}
+				// testCore.sumPriority = sumPriority;
+				// var submitText = new PIXI.Text(loadedCore, style);
+				// submitText.x = 20;
+				// submitText.y = 180;
+				// stage.addChild(submitText);
+				stage.removeChild(armourText);
+				var armourText = new PIXI.Text(sumPriority, style);
+				armourText.x = testArmour.graphicsData[0].shape.x + (testArmour.graphicsData[0].shape.width - 40);
+				armourText.y = testArmour.graphicsData[0].shape.y + (testArmour.graphicsData[0].shape.height/2) - (armourText.height/2);
+				stage.addChild(armourText);
+				animate();
+			}
+
+			function loadHelmet(){
+				submitHand();
+				testHelmet.chamber = submitted;
+				removeMiniCards(0, testHelmet.chamber);
+				displayMiniCards(0, 1, testHelmet);
+				// loadedCore = 'Core: ';
+				var sumPriority = 0;
+				for (var i = 0; i < testHelmet.chamber.length; i++)
+				{ 
+					// loadedCore += ' ' + testCore.chamber[i].text._text;
+					sumPriority += testHelmet.chamber[i].priority;
+				}
+				// testCore.sumPriority = sumPriority;
+				// var submitText = new PIXI.Text(loadedCore, style);
+				// submitText.x = 20;
+				// submitText.y = 180;
+				// stage.addChild(submitText);
+				stage.removeChild(helmetText);
+				var helmetText = new PIXI.Text(sumPriority, style);
+				helmetText.x = testHelmet.graphicsData[0].shape.x + (testHelmet.graphicsData[0].shape.width - 40);
+				helmetText.y = testHelmet.graphicsData[0].shape.y + (testHelmet.graphicsData[0].shape.height/2) - (helmetText.height/2);
+				stage.addChild(helmetText);
 				animate();
 			}
 
 			function fireEquipment(){
 				if(testCore.chamber && testCore.chamber.length >= 3){
 					enemyHP -= testCore.damage;
+					stage.removeChild(discardText);
 					var discardText = new PIXI.Text(enemyHP, style);
 					discardText.x = target.graphicsData[0].shape.x - 40;
 					discardText.y = target.graphicsData[0].shape.y;
-					stage.removeChild(discardText);
 					stage.addChild(discardText);
+					removeMiniCards(0, testCore.chamber);
+					for (var i = 0; i < testCore.chamber.length; i++)
+					{ 
+						discard.push(deck.splice(i, 1)[0]);
+					}
+					console.log(discard);
 					animate();
 					testCore.chamber = [];
 				}
+			}
+
+			function displayMiniCards(a, xOff, equipment){
+				chamber = equipment.chamber;
+				if(a < chamber.length){
+					if(chamber[a].miniCard){
+						console.log('Add Mini Card: '+chamber[a].text._text);
+						chamber[a].miniCard.graphicsData[0].shape.x = equipment.graphicsData[0].shape.x + (xOff * 20);
+						chamber[a].miniCard.graphicsData[0].shape.y = equipment.graphicsData[0].shape.y - 40;
+						chamber[a].miniCard.text.x = chamber[a].miniCard.graphicsData[0].shape.x + 5;
+						chamber[a].miniCard.text.y = chamber[a].miniCard.graphicsData[0].shape.y + 10;
+						stage.addChild(chamber[a].miniCard);
+						stage.addChild(chamber[a].miniCard.text);
+						stage.swapChildren(equipment, chamber[a].miniCard);
+						stage.swapChildren(equipment, equipment.icon);
+					}
+					a++;
+					displayMiniCards(a, xOff, equipment);
+				}
+			}
+
+			function removeMiniCards(a, chamber){
+				if(a < chamber.length){
+					console.log('Remove Mini Card: '+chamber[a].text._text);
+					stage.removeChild(chamber[a].miniCard);
+					stage.removeChild(chamber[a].miniCard.text);
+					a++;
+					removeMiniCards(a, chamber);
+				}
+				return;
 			}
 
 			/*function scrollCardsBackwards(a, end, xOff){
